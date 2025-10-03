@@ -165,9 +165,12 @@
                     <h3>Engineering Model</h3>
                     <div class="simulink-chart">
                         <!-- Simulink flowchart will be rendered here -->
-                        <div class="chart-placeholder">
-                            <i class="fas fa-code-branch"></i>
-                            <p>Simulink Model (I/O equations)</p>
+                        <div class="chart-placeholder" style="position:relative; max-height:420px; height:420px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                          <img id="mermaidThumb2" 
+                               src="Waste2Watt.png" 
+                               alt="Waste2Watt Engineering Model" 
+                               style="max-width:100%; max-height:100%; object-fit:contain; cursor:pointer; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.45); display:block;" 
+                               title="Click to enlarge" />
                         </div>
                     </div>
                 </div>
@@ -784,35 +787,7 @@
     </section>
 
     <!-- Animation Section -->
-    <section id="animation" class="animation-section">
-        <div class="container">
-            <h2 class="section-title">System Animation</h2>
-            <div class="animation-intro">
-                <p>
-                    To make M-REGS accessible to non-engineers, we built animated models:
-                </p>
-            </div>
-            
-            <div class="animation-content">
-                <div class="animation-item">
-                    <div class="animation-visual">
-                        <i class="fas fa-bolt"></i>
-                        <h3>ReactFlow Particle Animation</h3>
-                        <p>Real-time flow of waste streams → outputs</p>
-                    </div>
-                </div>
-                
-                <div class="animation-item">
-                    <div class="animation-visual">
-                        <i class="fas fa-film"></i>
-                        <h3>Narrative Video</h3>
-                        <p>1–2 min showing: 'Trash in → Utility out.'</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+   
     <!-- Bangladesh Design & Earth Application -->
     <section id="earth-application" class="earth-section">
         <div class="container">
@@ -908,7 +883,7 @@
             <h2 class="section-title">The Waste2Watt Crew</h2>
             
             <div class="team-grid">
-              <img src="Team.jpg" alt="Waste2Watt Team Photo" style="width:100%; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+              <img src="team.jpg" alt="Waste2Watt Team Photo" style="width:100%; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
             </div>
         </div>
     </section>
@@ -1010,7 +985,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         @media (max-width: 640px){
-            #mermaidThumb{ max-height:280px }
+            #mermaidThumb, #mermaidThumb2{ max-height:280px }
             #imageModalInner{ width: 98vw; height: 98vh }
         }
     </style>
@@ -1032,17 +1007,26 @@
     <script>
         (function(){
             const thumb = document.getElementById('mermaidThumb');
+            const thumb2 = document.getElementById('mermaidThumb2');
             const modal = document.getElementById('imageModalEnhanced');
             const inner = document.getElementById('imageModalInner');
             const closeBtn = document.getElementById('imageModalCloseEnhanced');
             const fullImg = document.getElementById('mermaidFullEnhanced');
 
-            if(!thumb || !modal) return;
+            if(!modal) return;
 
-            function openModal(){
-                fullImg.src = thumb.src; // allow separate hi-res path later
+            function openModal(clickedThumb){
+                if(clickedThumb) {
+                    fullImg.src = clickedThumb.src;
+                    fullImg.alt = clickedThumb.alt;
+                }
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
+                // Reset zoom and pan for new image
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                updateTransform();
                 // force reflow for animation
                 void fullImg.offsetWidth;
             }
@@ -1052,7 +1036,13 @@
                 document.body.style.overflow = '';
             }
 
-            thumb.addEventListener('click', openModal);
+            // Add click listeners for both thumbnails
+            if(thumb) {
+                thumb.addEventListener('click', () => openModal(thumb));
+            }
+            if(thumb2) {
+                thumb2.addEventListener('click', () => openModal(thumb2));
+            }
             closeBtn.addEventListener('click', closeModal);
 
             // Pan/zoom implementation
